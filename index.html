@@ -134,9 +134,9 @@ const Utils = {
     let h = `<div class="tc"><table><thead><tr>`;
     cols.forEach(c => h += `<th>${c.label}</th>`);
     if(actions) h += `<th>Actions</th>`;
-    h += `</tr></thead><tbody>`;
+    h += `<tr></thead><tbody>`;
     data.forEach(row => {
-      h += `</tr>`;
+      h += `<tr>`;
       cols.forEach(c => {
         let val = row[c.key] || '—';
         if(c.format) val = c.format(val, row);
@@ -279,7 +279,7 @@ class Store {
   }
 }
 
-// ===================== APP CLASS =====================
+// ===================== APP CLASS (all modules) =====================
 class App {
   constructor() {
     this.me = null;
@@ -439,7 +439,7 @@ class App {
     if(span) span.innerText = due > 0 ? `${due} due today` : 'Follow-ups';
   }
 
-  // ----- DASHBOARD (full implementation - same as before) -----
+  // ----- DASHBOARD -----
   renderDashboard() {
     const area = document.getElementById('ca');
     const invs = this.store.get('invoices');
@@ -501,7 +501,7 @@ class App {
     }).join('');
   }
 
-  // ----- CUSTOMERS (full) -----
+  // ----- CUSTOMERS -----
   renderCustomers() {
     const data = this.store.get('customers');
     const today = new Date(); today.setHours(0,0,0,0);
@@ -598,7 +598,7 @@ class App {
     rows.forEach(tr => tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none');
   }
 
-  // ----- FOLLOW-UPS (full) -----
+  // ----- FOLLOW-UPS -----
   renderFollowups() {
     const custs = this.store.get('customers').filter(c => c.followupDate).sort((a,b)=>new Date(a.followupDate)-new Date(b.followupDate));
     const today = new Date(); today.setHours(0,0,0,0);
@@ -641,7 +641,7 @@ class App {
     Utils.toast('Rescheduled');
   }
 
-  // ----- JOBS (full) -----
+  // ----- JOBS -----
   renderJobs() {
     const jobs = this.store.get('jobs');
     const custs = this.store.get('customers');
@@ -721,7 +721,7 @@ class App {
     if(confirm('Delete this job?')) { this.store.delete('jobs', id); this.renderJobs(); Utils.toast('Job deleted'); }
   }
 
-  // ----- INVOICES (full, with 18% GST) -----
+  // ----- INVOICES -----
   renderInvoices() {
     const invs = this.store.get('invoices');
     const custs = this.store.get('customers');
@@ -895,7 +895,7 @@ class App {
     if(confirm('Delete invoice?')) { this.store.delete('invoices', id); this.renderInvoices(); Utils.toast('Invoice deleted'); }
   }
 
-  // ----- AMC (full) -----
+  // ----- AMC -----
   renderAmc() {
     const amcs = this.store.get('amc');
     const custs = this.store.get('customers');
@@ -959,7 +959,7 @@ class App {
     if(confirm('Delete AMC contract?')) { this.store.delete('amc', id); this.renderAmc(); Utils.toast('AMC deleted'); }
   }
 
-  // ----- INVENTORY (full) -----
+  // ----- INVENTORY -----
   renderInventory() {
     const items = this.store.get('inventory');
     const cols = [
@@ -1015,7 +1015,7 @@ class App {
     if(confirm('Delete this item?')) { this.store.delete('inventory', id); this.renderInventory(); Utils.toast('Item deleted'); }
   }
 
-  // ----- REPORTS (full) -----
+  // ----- REPORTS -----
   renderReports() {
     const invs = this.store.get('invoices');
     const jobs = this.store.get('jobs');
@@ -1046,7 +1046,7 @@ class App {
     Utils.toast(`${table} exported`);
   }
 
-  // ----- SETTINGS (full) -----
+  // ----- SETTINGS -----
   renderSettings() {
     const s = this.store.db.settings;
     const users = this.store.get('users');
