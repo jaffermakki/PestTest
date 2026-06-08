@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PCT Enterprise CRM – Cloud Sync with JSONBin</title>
+<title>PCT Enterprise CRM – JSONBin Cloud Sync</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -131,9 +131,22 @@ const Utils = {
   badge(text, type) { return `<span class="badge ${type}">${text}</span>`; },
   table(data, cols, actions, emptyMsg = 'No records found.') {
     if(!data || !data.length) return `<div style="padding:2rem;text-align:center;color:var(--muted);"><i data-lucide="inbox" style="width:36px;opacity:.3;"></i><p>${emptyMsg}</p></div>`;
-    let h = `<div class="tc"><table><thead><tr>`; cols.forEach(c => h += `<th>${c.label}</th>`); if(actions) h += `<th>Actions</th>`; h += `<tr></thead><tbody>`;
-    data.forEach(row => { h += `<tr>`; cols.forEach(c => { let val = row[c.key] || '—'; if(c.format) val = c.format(val, row); h += `<td>${val}</td>`; }); if(actions) h += `<td><div style="display:flex;gap:4px;flex-wrap:wrap;">${actions(row)}</div></td>`; h += `</tr>`; });
-    h += `</tbody></table></div>`; return h;
+    let h = `<div class="tc"><table><thead><tr>`;
+    cols.forEach(c => h += `<th>${c.label}</th>`);
+    if(actions) h += `<th>Actions</th>`;
+    h += `</tr></thead><tbody>`;
+    data.forEach(row => {
+      h += `</tr>`;
+      cols.forEach(c => {
+        let val = row[c.key] || '—';
+        if(c.format) val = c.format(val, row);
+        h += `<td>${val}</td>`;
+      });
+      if(actions) h += `<td><div style="display:flex;gap:4px;flex-wrap:wrap;">${actions(row)}</div></td>`;
+      h += `</tr>`;
+    });
+    h += `</tbody></table></div>`;
+    return h;
   },
   numberToWords(num) {
     const a = ['','One ','Two ','Three ','Four ','Five ','Six ','Seven ','Eight ','Nine ','Ten ','Eleven ','Twelve ','Thirteen ','Fourteen ','Fifteen ','Sixteen ','Seventeen ','Eighteen ','Nineteen '];
@@ -150,7 +163,7 @@ const Utils = {
   }
 };
 
-// ===================== CLOUD STORAGE WITH JSONBIN.IO =====================
+// ===================== JSONBIN CLOUD STORAGE =====================
 const JSONBIN_API_KEY = "$2a$10$faeguGZ2l6OKA1V5eBf7o.hswiOtlSPOtmrRvg6q9nNg0DgmsVtOe";
 const JSONBIN_BIN_ID   = "6a266d5cf5f4af5e29c9b05e";
 
@@ -189,16 +202,8 @@ async function saveToCloud(db) {
 // ===================== STORE CLASS =====================
 class Store {
   constructor() {
-    this.db = null;
     this.isSyncing = false;
-    this.services = ['Cockroach Treatment','Termite Treatment','Rodent Control','Mosquito Fogging','Bed Bug Treatment','Sanitization','General Pest Control','Wood Borer Treatment'];
-    this.areas = ['Secunderabad','Banjara Hills','Jubilee Hills','Hi-Tech City','Kukatpally','Ameerpet','Begumpet','Madhapur','Gachibowli'];
-    this.contractTypes = ['General Pest','Termite','Rodent','Mosquito Fogging','Bed Bug','Pre-Construction Termite','Post-Construction Termite'];
-    this.initPromise = this.init();
-  }
-
-  getDefaultData() {
-    return {
+    this.defaultData = {
       users: [
         {id:'u1', username:'admin', pass:'admin123', role:'admin'},
         {id:'u2', username:'manager', pass:'manager123', role:'manager'},
@@ -208,6 +213,7 @@ class Store {
       invoices: [], jobs: [], amc: [], inventory: [], logs: [],
       settings: { theme:'light', companyName:'PEST CONTROL TECHNICS', companyAddress:'3-4-607, 1st Floor, NARAYANGUDA, Hyderabad-29', companyPhone:'', companyGST:'', companyTagline:'Creating a Pest free environment since 1989', companyEmail:'info@pesttech.in', companyLogo: null, memberLogo: null }
     };
+    this.initPromise = this.init();
   }
 
   async init() {
@@ -216,17 +222,16 @@ class Store {
     if (cloudData) {
       this.db = cloudData;
     } else {
-      // Fallback to local storage
+      // Fallback to localStorage
       const local = localStorage.getItem('pct_cloud_v1');
-      if (local) try { this.db = JSON.parse(local); } catch(e) { this.db = this.getDefaultData(); }
-      else this.db = this.getDefaultData();
+      if (local) try { this.db = JSON.parse(local); } catch(e) { this.db = this.defaultData; }
+      else this.db = this.defaultData;
     }
-    // Ensure all fields exist
-    if (!this.db.users) this.db.users = this.getDefaultData().users;
-    if (!this.db.customers) this.db.customers = this.getDefaultData().customers;
-    if (!this.db.settings) this.db.settings = this.getDefaultData().settings;
+    // Ensure all required fields exist
+    if (!this.db.users) this.db.users = this.defaultData.users;
+    if (!this.db.customers) this.db.customers = this.defaultData.customers;
+    if (!this.db.settings) this.db.settings = this.defaultData.settings;
     if (!this.db.settings.hasOwnProperty('memberLogo')) this.db.settings.memberLogo = null;
-    // Save to ensure cloud copy exists
     await this.save();
     if (window.app && typeof window.app.refreshCurrentView === 'function') window.app.refreshCurrentView();
   }
@@ -302,6 +307,10 @@ class App {
       const raw = sessionStorage.getItem('pct_s') || localStorage.getItem('pct_r');
       if(raw) {
         const sess = JSON.parse(raw);
+        if (!this.store) {
+          this.store = new Store();
+          await this.store.initPromise;
+        }
         const user = this.store.get('users').find(u => u.id === sess.id && u.username === sess.username);
         if(user) { this.doLogin(user, !!localStorage.getItem('pct_r')); return true; }
       }
@@ -315,7 +324,6 @@ class App {
     const username = document.getElementById('lu').value.trim();
     const password = document.getElementById('lp').value;
     const remember = document.getElementById('rm').checked;
-    // Ensure store is ready
     if (!this.store) {
       this.store = new Store();
       await this.store.initPromise;
@@ -431,7 +439,7 @@ class App {
     if(span) span.innerText = due > 0 ? `${due} due today` : 'Follow-ups';
   }
 
-  // ----- DASHBOARD -----
+  // ----- DASHBOARD (full implementation - same as before) -----
   renderDashboard() {
     const area = document.getElementById('ca');
     const invs = this.store.get('invoices');
@@ -493,7 +501,7 @@ class App {
     }).join('');
   }
 
-  // ----- CUSTOMERS -----
+  // ----- CUSTOMERS (full) -----
   renderCustomers() {
     const data = this.store.get('customers');
     const today = new Date(); today.setHours(0,0,0,0);
@@ -590,7 +598,7 @@ class App {
     rows.forEach(tr => tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none');
   }
 
-  // ----- FOLLOW-UPS -----
+  // ----- FOLLOW-UPS (full) -----
   renderFollowups() {
     const custs = this.store.get('customers').filter(c => c.followupDate).sort((a,b)=>new Date(a.followupDate)-new Date(b.followupDate));
     const today = new Date(); today.setHours(0,0,0,0);
@@ -633,7 +641,7 @@ class App {
     Utils.toast('Rescheduled');
   }
 
-  // ----- JOBS -----
+  // ----- JOBS (full) -----
   renderJobs() {
     const jobs = this.store.get('jobs');
     const custs = this.store.get('customers');
@@ -713,7 +721,7 @@ class App {
     if(confirm('Delete this job?')) { this.store.delete('jobs', id); this.renderJobs(); Utils.toast('Job deleted'); }
   }
 
-  // ----- INVOICES -----
+  // ----- INVOICES (full, with 18% GST) -----
   renderInvoices() {
     const invs = this.store.get('invoices');
     const custs = this.store.get('customers');
@@ -759,7 +767,7 @@ class App {
   addInvoiceLine() {
     const tbody = document.querySelector('#invLines tbody');
     const row = document.createElement('tr');
-    row.innerHTML = `<tr><select class="invService" style="margin:0;">${this.store.services.map(s=>`<option>${s}</option>`).join('')}</select></td><td><input type="number" class="invAmount" onchange="app.calcInvoiceTotal()" min="0"></td><td><button type="button" class="danger sm" onclick="this.closest('tr').remove();app.calcInvoiceTotal()">✕</button></tr>`;
+    row.innerHTML = `<tr><select class="invService" style="margin:0;">${this.store.services.map(s=>`<option>${s}</option>`).join('')}</select></td><td><input type="number" class="invAmount" onchange="app.calcInvoiceTotal()" min="0"></td><td><button type="button" class="danger sm" onclick="this.closest('tr').remove();app.calcInvoiceTotal()">✕</button></td>`;
     tbody.appendChild(row);
   }
 
@@ -887,7 +895,7 @@ class App {
     if(confirm('Delete invoice?')) { this.store.delete('invoices', id); this.renderInvoices(); Utils.toast('Invoice deleted'); }
   }
 
-  // ----- AMC -----
+  // ----- AMC (full) -----
   renderAmc() {
     const amcs = this.store.get('amc');
     const custs = this.store.get('customers');
@@ -951,7 +959,7 @@ class App {
     if(confirm('Delete AMC contract?')) { this.store.delete('amc', id); this.renderAmc(); Utils.toast('AMC deleted'); }
   }
 
-  // ----- INVENTORY -----
+  // ----- INVENTORY (full) -----
   renderInventory() {
     const items = this.store.get('inventory');
     const cols = [
@@ -1007,7 +1015,7 @@ class App {
     if(confirm('Delete this item?')) { this.store.delete('inventory', id); this.renderInventory(); Utils.toast('Item deleted'); }
   }
 
-  // ----- REPORTS -----
+  // ----- REPORTS (full) -----
   renderReports() {
     const invs = this.store.get('invoices');
     const jobs = this.store.get('jobs');
@@ -1038,7 +1046,7 @@ class App {
     Utils.toast(`${table} exported`);
   }
 
-  // ----- SETTINGS -----
+  // ----- SETTINGS (full) -----
   renderSettings() {
     const s = this.store.db.settings;
     const users = this.store.get('users');
@@ -1125,10 +1133,8 @@ class App {
   }
 }
 
-// Create app instance after page loads
-window.addEventListener('DOMContentLoaded', async () => {
-  window.app = new App();
-});
+// start the application
+window.app = new App();
 </script>
 </body>
 </html>
