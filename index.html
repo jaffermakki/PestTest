@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PCT Enterprise CRM – JSONBin Cloud Sync</title>
+<title>PCT Enterprise CRM – JSONBin Cloud Sync (Invoice Fixed)</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
+/* ========== SAME STYLES AS BEFORE ========== */
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
 :root{--bg:#f1f5f9;--surface:#fff;--text:#0f172a;--muted:#64748b;--primary:#4f46e5;--phover:#4338ca;--danger:#ef4444;--success:#10b981;--warning:#f59e0b;--border:#e2e8f0;--sidebar:#0f172a;}
 .dark{--bg:#020617;--surface:#0f172a;--text:#f8fafc;--muted:#94a3b8;--primary:#6366f1;--phover:#818cf8;--danger:#f87171;--success:#34d399;--warning:#fbbf24;--border:#1e293b;--sidebar:#020617;}
@@ -67,6 +68,7 @@ th{background:var(--bg);font-weight:600;color:var(--muted);}
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
 <div id="lv" style="display:flex;justify-content:center;align-items:center;height:100vh;background:var(--bg);">
 <div class="card" style="width:100%;max-width:420px;text-align:center;padding:2.8rem 2rem;">
   <div style="margin-bottom:1rem;"><i data-lucide="shield-check" style="width:50px;height:50px;color:var(--primary);"></i></div>
@@ -81,6 +83,7 @@ th{background:var(--bg);font-weight:600;color:var(--muted);}
   <p style="margin-top:1.4rem;font-size:.68rem;">admin/admin123 | manager/manager123 | tech/tech123</p>
 </div></div>
 
+<!-- MAIN APP -->
 <div id="app-container" class="hidden">
 <nav id="sidebar">
   <h2><i data-lucide="bug"></i> PCT CRM</h2>
@@ -108,6 +111,7 @@ th{background:var(--bg);font-weight:600;color:var(--muted);}
 </main>
 </div>
 
+<!-- MODAL -->
 <div id="mo" onclick="if(event.target===this)window.app.closeModal()">
 <div id="mdl">
   <div class="mh"><h3 id="mt"></h3><button class="sec" id="closeModalBtn">✕</button></div>
@@ -134,7 +138,7 @@ const Utils = {
     let h = `<div class="tc"><table><thead><tr>`;
     cols.forEach(c => h += `<th>${c.label}</th>`);
     if(actions) h += `<th>Actions</th>`;
-    h += `<tr></thead><tbody>`;
+    h += `</tr></thead><tbody>`;
     data.forEach(row => {
       h += `<tr>`;
       cols.forEach(c => {
@@ -145,7 +149,7 @@ const Utils = {
       if(actions) h += `<td><div style="display:flex;gap:4px;flex-wrap:wrap;">${actions(row)}</div></td>`;
       h += `</tr>`;
     });
-    h += `</tbody></table></div>`;
+    h += `</tbody><table></div>`;
     return h;
   },
   numberToWords(num) {
@@ -213,21 +217,21 @@ class Store {
       invoices: [], jobs: [], amc: [], inventory: [], logs: [],
       settings: { theme:'light', companyName:'PEST CONTROL TECHNICS', companyAddress:'3-4-607, 1st Floor, NARAYANGUDA, Hyderabad-29', companyPhone:'', companyGST:'', companyTagline:'Creating a Pest free environment since 1989', companyEmail:'info@pesttech.in', companyLogo: null, memberLogo: null }
     };
+    this.services = ['Cockroach Treatment','Termite Treatment','Rodent Control','Mosquito Fogging','Bed Bug Treatment','Sanitization','General Pest Control','Wood Borer Treatment'];
+    this.areas = ['Secunderabad','Banjara Hills','Jubilee Hills','Hi-Tech City','Kukatpally','Ameerpet','Begumpet','Madhapur','Gachibowli'];
+    this.contractTypes = ['General Pest','Termite','Rodent','Mosquito Fogging','Bed Bug','Pre-Construction Termite','Post-Construction Termite'];
     this.initPromise = this.init();
   }
 
   async init() {
-    // Try cloud first
     const cloudData = await loadFromCloud();
     if (cloudData) {
       this.db = cloudData;
     } else {
-      // Fallback to localStorage
       const local = localStorage.getItem('pct_cloud_v1');
       if (local) try { this.db = JSON.parse(local); } catch(e) { this.db = this.defaultData; }
       else this.db = this.defaultData;
     }
-    // Ensure all required fields exist
     if (!this.db.users) this.db.users = this.defaultData.users;
     if (!this.db.customers) this.db.customers = this.defaultData.customers;
     if (!this.db.settings) this.db.settings = this.defaultData.settings;
@@ -279,7 +283,7 @@ class Store {
   }
 }
 
-// ===================== APP CLASS (all modules) =====================
+// ===================== APP CLASS =====================
 class App {
   constructor() {
     this.me = null;
@@ -439,7 +443,7 @@ class App {
     if(span) span.innerText = due > 0 ? `${due} due today` : 'Follow-ups';
   }
 
-  // ----- DASHBOARD -----
+  // ----- DASHBOARD (full, same as before) -----
   renderDashboard() {
     const area = document.getElementById('ca');
     const invs = this.store.get('invoices');
@@ -501,7 +505,7 @@ class App {
     }).join('');
   }
 
-  // ----- CUSTOMERS -----
+  // ----- CUSTOMERS (unchanged) -----
   renderCustomers() {
     const data = this.store.get('customers');
     const today = new Date(); today.setHours(0,0,0,0);
@@ -598,7 +602,7 @@ class App {
     rows.forEach(tr => tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none');
   }
 
-  // ----- FOLLOW-UPS -----
+  // ----- FOLLOW-UPS (unchanged) -----
   renderFollowups() {
     const custs = this.store.get('customers').filter(c => c.followupDate).sort((a,b)=>new Date(a.followupDate)-new Date(b.followupDate));
     const today = new Date(); today.setHours(0,0,0,0);
@@ -641,7 +645,7 @@ class App {
     Utils.toast('Rescheduled');
   }
 
-  // ----- JOBS -----
+  // ----- JOBS (unchanged) -----
   renderJobs() {
     const jobs = this.store.get('jobs');
     const custs = this.store.get('customers');
@@ -721,7 +725,7 @@ class App {
     if(confirm('Delete this job?')) { this.store.delete('jobs', id); this.renderJobs(); Utils.toast('Job deleted'); }
   }
 
-  // ----- INVOICES -----
+  // ----- INVOICES (FIXED) -----
   renderInvoices() {
     const invs = this.store.get('invoices');
     const custs = this.store.get('customers');
@@ -750,24 +754,26 @@ class App {
     const custs = this.store.get('customers');
     const invNum = `INV-${new Date().getFullYear()}-${Date.now().toString().slice(-5)}`;
     this.openModal('Create Invoice', `
-      <form onsubmit="app.saveInvoice(event)">
-        <div class="fr"><div><label>Invoice #</label><input name="invNum" value="${invNum}" readonly></div><div><label>Date</label><input type="date" name="date" required value="${new Date().toISOString().slice(0,10)}"></div></div>
+      <form onsubmit="app.saveInvoice(event)" id="invoiceForm">
+        <div class="fr"><div><label>Invoice #</label><input name="invNum" value="${invNum}" readonly style="background:var(--border);"></div><div><label>Date</label><input type="date" name="date" required value="${new Date().toISOString().slice(0,10)}"></div></div>
         <div class="fr"><div><label>Work Order No.</label><input name="workOrderNo" placeholder="Optional"></div><div><label>Description / Month</label><input name="serviceDescription" placeholder="e.g., General pest control for May 2026"></div></div>
-        <label>Customer</label><select name="customerId" required><option value="">Select...</option>${custs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select>
+        <label>Customer *</label><select name="customerId" required><option value="">Select...</option>${custs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select>
         <h4>Line Items</h4>
-        <table id="invLines" style="width:100%;margin-bottom:0.5rem;"><thead><tr><th>Service</th><th>Amount (₹)</th><th></th></tr></thead><tbody><tr><td><select name="service_0" class="invService">${this.store.services.map(s=>`<option>${s}</option>`).join('')}</select></td><td><input type="number" class="invAmount" onchange="app.calcInvoiceTotal()" min="0" step="1"></td><td><button type="button" class="danger sm" onclick="this.closest('tr').remove();app.calcInvoiceTotal()">✕</button></td></tr></tbody></table>
+        <table id="invLines" style="width:100%;margin-bottom:0.5rem;"><thead><tr><th>Service</th><th>Amount (₹)</th><th></th></tr></thead><tbody><tr><td><select class="invService" style="margin:0;">${this.store.services.map(s=>`<option>${s}</option>`).join('')}</select></td><td><input type="number" class="invAmount" oninput="app.calcInvoiceTotal()" min="0" step="1" placeholder="0"></td><td><button type="button" class="danger sm" onclick="this.closest('tr').remove();app.calcInvoiceTotal()">✕</button></td></tr></tbody></table>
         <button type="button" class="sec sm" onclick="app.addInvoiceLine()">+ Add Line</button>
         <div class="g g3" style="margin-top:0.8rem;"><div><label>Subtotal</label><input id="invSub" readonly></div><div><label>GST 18%</label><input id="invGst" readonly></div><div><label>Total</label><input name="total" id="invTotal" readonly></div></div>
         <label>Payment Status</label><select name="paymentStatus"><option>Unpaid</option><option>Partial</option><option>Paid</option></select>
         <button type="submit">Generate Invoice</button>
       </form>
     `);
+    // Initial calculation in case of default values
+    setTimeout(() => this.calcInvoiceTotal(), 50);
   }
 
   addInvoiceLine() {
     const tbody = document.querySelector('#invLines tbody');
     const row = document.createElement('tr');
-    row.innerHTML = `<tr><select class="invService" style="margin:0;">${this.store.services.map(s=>`<option>${s}</option>`).join('')}</select></td><td><input type="number" class="invAmount" onchange="app.calcInvoiceTotal()" min="0"></td><td><button type="button" class="danger sm" onclick="this.closest('tr').remove();app.calcInvoiceTotal()">✕</button></td>`;
+    row.innerHTML = `<tr><select class="invService" style="margin:0;">${this.store.services.map(s=>`<option>${s}</option>`).join('')}</select></td><td><input type="number" class="invAmount" oninput="app.calcInvoiceTotal()" min="0" placeholder="0"></td><td><button type="button" class="danger sm" onclick="this.closest('tr').remove();app.calcInvoiceTotal()">✕</button></td>`;
     tbody.appendChild(row);
   }
 
@@ -776,14 +782,18 @@ class App {
     const sub = amounts.reduce((a,b)=>a+b,0);
     const gst = sub * 0.18;
     const tot = sub + gst;
-    document.getElementById('invSub').value = sub.toFixed(2);
-    document.getElementById('invGst').value = gst.toFixed(2);
-    document.getElementById('invTotal').value = tot.toFixed(2);
+    const invSub = document.getElementById('invSub');
+    const invGst = document.getElementById('invGst');
+    const invTotal = document.getElementById('invTotal');
+    if (invSub) invSub.value = sub.toFixed(2);
+    if (invGst) invGst.value = gst.toFixed(2);
+    if (invTotal) invTotal.value = tot.toFixed(2);
   }
 
   saveInvoice(e) {
     e.preventDefault();
-    const form = e.target;
+    const form = e.target.closest('form');
+    if (!form) return;
     const invNum = form.invNum.value;
     const date = form.date.value;
     const workOrderNo = form.workOrderNo?.value || '';
@@ -895,7 +905,7 @@ class App {
     if(confirm('Delete invoice?')) { this.store.delete('invoices', id); this.renderInvoices(); Utils.toast('Invoice deleted'); }
   }
 
-  // ----- AMC -----
+  // ----- AMC (unchanged) -----
   renderAmc() {
     const amcs = this.store.get('amc');
     const custs = this.store.get('customers');
@@ -959,7 +969,7 @@ class App {
     if(confirm('Delete AMC contract?')) { this.store.delete('amc', id); this.renderAmc(); Utils.toast('AMC deleted'); }
   }
 
-  // ----- INVENTORY -----
+  // ----- INVENTORY (unchanged) -----
   renderInventory() {
     const items = this.store.get('inventory');
     const cols = [
@@ -1015,7 +1025,7 @@ class App {
     if(confirm('Delete this item?')) { this.store.delete('inventory', id); this.renderInventory(); Utils.toast('Item deleted'); }
   }
 
-  // ----- REPORTS -----
+  // ----- REPORTS (unchanged) -----
   renderReports() {
     const invs = this.store.get('invoices');
     const jobs = this.store.get('jobs');
@@ -1046,7 +1056,7 @@ class App {
     Utils.toast(`${table} exported`);
   }
 
-  // ----- SETTINGS -----
+  // ----- SETTINGS (unchanged) -----
   renderSettings() {
     const s = this.store.db.settings;
     const users = this.store.get('users');
