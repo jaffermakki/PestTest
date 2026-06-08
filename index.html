@@ -1,14 +1,13 @@
-g<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PCT CRM – Cloud Sync Working</title>
+<title>PCT CRM – Full Edition with Professional Invoice</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-/* ========== COMPLETE STYLES (same as before – kept for full functionality) ========== */
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif;}
 :root{--bg:#f1f5f9;--surface:#fff;--text:#0f172a;--muted:#64748b;--primary:#4f46e5;--phover:#4338ca;--danger:#ef4444;--success:#10b981;--warning:#f59e0b;--border:#e2e8f0;--sidebar:#0f172a;}
 .dark{--bg:#020617;--surface:#0f172a;--text:#f8fafc;--muted:#94a3b8;--primary:#6366f1;--phover:#818cf8;--danger:#f87171;--success:#34d399;--warning:#fbbf24;--border:#1e293b;--sidebar:#020617;}
@@ -67,8 +66,6 @@ th{background:var(--bg);font-weight:600;color:var(--muted);}
 </style>
 </head>
 <body>
-
-<!-- LOGIN SCREEN -->
 <div id="lv" style="display:flex;justify-content:center;align-items:center;height:100vh;background:var(--bg);">
 <div class="card" style="width:100%;max-width:420px;text-align:center;padding:2.8rem 2rem;">
   <div style="margin-bottom:1rem;"><i data-lucide="shield-check" style="width:50px;height:50px;color:var(--primary);"></i></div>
@@ -83,7 +80,6 @@ th{background:var(--bg);font-weight:600;color:var(--muted);}
   <p style="margin-top:1.4rem;font-size:.68rem;">admin/admin123 | manager/manager123 | tech/tech123</p>
 </div></div>
 
-<!-- MAIN APP -->
 <div id="app-container" class="hidden">
 <nav id="sidebar">
   <h2><i data-lucide="bug"></i> PCT CRM</h2>
@@ -111,7 +107,6 @@ th{background:var(--bg);font-weight:600;color:var(--muted);}
 </main>
 </div>
 
-<!-- MODAL -->
 <div id="mo" onclick="if(event.target===this)window.app.closeModal()">
 <div id="mdl">
   <div class="mh"><h3 id="mt"></h3><button class="sec" onclick="window.app.closeModal()">✕</button></div>
@@ -138,7 +133,7 @@ const Utils = {
     let h = `<div class="tc"><table><thead><tr>`;
     cols.forEach(c => h += `<th>${c.label}</th>`);
     if(actions) h += `<th>Actions</th>`;
-    h += `</tr></thead><tbody>`;
+    h += `<tr></thead><tbody>`;
     data.forEach(row => {
       h += `<tr>`;
       cols.forEach(c => {
@@ -147,7 +142,7 @@ const Utils = {
         h += `<td>${val}</td>`;
       });
       if(actions) h += `<td><div style="display:flex;gap:4px;flex-wrap:wrap;">${actions(row)}</div></td>`;
-      h += `<tr>`;
+      h += `</tr>`;
     });
     h += `</tbody></table></div>`;
     return h;
@@ -209,28 +204,7 @@ async function loadFromCloud() {
 class Store {
   constructor() {
     this.services = ['Cockroach Treatment','Termite Treatment','Rodent Control','Mosquito Fogging','Bed Bug Treatment','Sanitization','General Pest Control','Wood Borer Treatment'];
-    this.areas = [
-  // Central & Old City
-  "Abids", "Afzal Gunj", "Begum Bazaar", "Charminar", "Dar-ul-Shifa", "Goshamahal", "Hyderabad Main (GPO)", "Koti", "Malakpet", "Moghalpura", "Mozamjahi Market", "Nampally", "Old City (Chudi Bazaar)", "Osmania University", "Purani Haveli", "Raj Bhavan Road", "Sultan Bazar", "Tilak Road", "Yakutpura",
-  
-  // South & South‑West
-  "Aramghar", "Attapur", "Bahadurpura", "Barkas", "Chandrayangutta", "Dabeerpura", "Falaknuma", "Himayatnagar", "Jahanuma", "Kanchanbagh", "Lal Darwaza", "Moinabad", "Narsingi", "Rajendranagar", "Santosh Nagar", "Shamshabad", "Suncity", "Tolichowki", "Uppuguda",
-  
-  // West & North‑West (IT Corridor)
-  "Banjara Hills (All Roads)", "Banjara Hills Road No.1 to 12", "Film Nagar", "Jubilee Hills (All Roads)", "Jubilee Hills Checkpost", "Khajaguda", "Kondapur", "Madhapur", "Gachibowli", "Kavuri Hills", "Financial District", "Nanakramguda", "HITEC City", "Manikonda", "Puppalguda", "Tellapur", "Nallagandla", "Serilingampally", "Miyapur", "Bachupally", "Kukatpally", "KPHB Colony", "Kukatpally Housing Board", "Moosapet", "BHEL", "Chanda Nagar", "Lingampally", "Chandanagar", "Hafeezpet", "Vivekananda Nagar", "Rudraram",
-  
-  // North & North‑East
-  "Alwal", "Bowenpally", "Balanagar", "Bolarum", "Chilkalguda", "Domalguda", "Gandhinagar", "Jeedimetla", "Karkhana", "Lalaguda", "Malkajgiri", "Mettuguda", "Nacharam", "Neredmet", "R.K. Puram", "Safilguda", "Santhi Nagar", "Sikanderabad", "Tarnaka", "Trimulgherry", "Uppal", "ECIL X Roads", "Habsiguda", "AS Rao Nagar", "Cherlapalli", "Kushaiguda", "Nagole",
-  
-  // East & South‑East
-  "Amberpet", "Dilsukhnagar", "Gaddiannaram", "Chaitanyapuri", "Kothapet", "L.B. Nagar", "Mansoorabad", "Nagarjuna Sagar Road", "Ramanthapur", "Saroornagar", "Sagar Ring Road", "Hayathnagar", "Vanastalipuram", "Pocharam", "Boduppal", "Medipally", "Ghatkesar",
-  
-  // New & Developing Areas
-  "Bandlaguda Jagir", "Kismatpur", "Peerancheru", "Shadnagar", "Moula Ali", "Kapra", "ECIL", "Hyder Nagar", "Yapral", "Sainikpuri", "A.S. Rao Nagar", "Sri Nagar Colony", "Ameerpet", "S.R. Nagar", "Erragadda", "Sanjeeva Reddy Nagar", "Yellareddyguda", "Srinagar Colony", "Punjagutta", "Somajiguda", "Khairatabad", "Masab Tank", "Lakdi-ka-pul", "Saifabad", "Secretariat",
-  
-  // Additional Important Localities
-  "Shalibanda", "Moghalpura", "Kachiguda", "Narayanguda", "Domalguda", "Himayathnagar", "Basheerbagh", "Lakdikapul", "Khairtabad", "Irrum Manzil", "Begumpet", "Shamirpet", "Kompally", "Suchitra", "Jeedimetla", "Quthbullapur", "Patancheru", "Sangareddy", "Medchal", "Gundlapochampally", "Bowrampet"
-];
+    this.areas = ['Secunderabad','Banjara Hills','Jubilee Hills','Hi-Tech City','Kukatpally','Ameerpet','Begumpet','Madhapur','Gachibowli'];
     this.contractTypes = ['General Pest','Termite','Rodent','Mosquito Fogging','Bed Bug','Pre-Construction Termite','Post-Construction Termite'];
     this.defaultData = {
       users: [
@@ -254,7 +228,6 @@ class Store {
       const local = localStorage.getItem('pct_cloud_v1');
       this.db = local ? JSON.parse(local) : JSON.parse(JSON.stringify(this.defaultData));
     }
-    // ensure required fields
     if (!this.db.users) this.db.users = this.defaultData.users;
     if (!this.db.customers) this.db.customers = this.defaultData.customers;
     if (!this.db.settings) this.db.settings = this.defaultData.settings;
@@ -549,7 +522,7 @@ class App {
   async saveJob(e) { e.preventDefault(); const data = Object.fromEntries(new FormData(e.target)); data.status = 'Pending'; await this.store.add('jobs', data); this.closeModal(); this.renderJobs(); Utils.toast('Job assigned'); }
   async advanceJobStatus(id) { const job = this.store.byId('jobs', id); const statuses = ['Pending','Assigned','In Progress','Completed']; const next = statuses[Math.min(statuses.indexOf(job.status)+1,3)]; await this.store.update('jobs', id, { status: next }); this.renderJobs(); }
   async deleteJob(id) { if(confirm('Delete job?')) { await this.store.delete('jobs', id); this.renderJobs(); } }
-  // ----- INVOICES -----
+  // ----- INVOICES (with professional print format) -----
   renderInvoices() {
     const invs = this.store.get('invoices');
     const custs = this.store.get('customers');
@@ -571,12 +544,12 @@ class App {
     this.openModal('Create Invoice', `
       <form onsubmit="window.app.saveInvoice(event)" id="invoiceForm">
         <div class="fr"><div><label>Invoice #</label><input name="invNum" value="${invNum}" readonly></div><div><label>Date</label><input type="date" name="date" required value="${new Date().toISOString().slice(0,10)}"></div></div>
-        <div class="fr"><div><label>Work Order No.</label><input name="workOrderNo" placeholder="Optional"></div><div><label>Description</label><input name="serviceDescription" placeholder="e.g., General pest control for May 2026"></div></div>
+        <div class="fr"><div><label>Work Order No.</label><input name="workOrderNo" placeholder="Optional"></div><div><label>Description / Month</label><input name="serviceDescription" placeholder="e.g., General pest control for May 2026"></div></div>
         <label>Customer *</label><select name="customerId" required><option value="">Select...</option>${custs.map(c=>`<option value="${c.id}">${c.name}</option>`).join('')}</select>
         <h4>Line Items</h4>
         <table id="invLines" style="width:100%;margin-bottom:0.5rem;"><thead><tr><th>Service</th><th>Amount (₹)</th><th></th></tr></thead><tbody><tr><td><select class="invService" style="margin:0;">${this.store.services.map(s=>`<option>${s}</option>`).join('')}</select></td><td><input type="number" class="invAmount" oninput="window.app.calcInvoiceTotal()" min="0" step="1" placeholder="0"></td><td><button type="button" class="danger sm" onclick="this.closest('tr').remove();window.app.calcInvoiceTotal()">✕</button></td></tr></tbody></table>
         <button type="button" class="sec sm" onclick="window.app.addInvoiceLine()">+ Add Line</button>
-        <div class="g g3" style="margin-top:0.8rem;"><div><label>Subtotal</label><input id="invSub" readonly></div><div><label>GST 0%</label><input id="invGst" readonly></div><div><label>Total</label><input name="total" id="invTotal" readonly></div></div>
+        <div class="g g3" style="margin-top:0.8rem;"><div><label>Subtotal</label><input id="invSub" readonly></div><div><label>GST 18%</label><input id="invGst" readonly></div><div><label>Total</label><input name="total" id="invTotal" readonly></div></div>
         <label>Payment Status</label><select name="paymentStatus"><option>Unpaid</option><option>Partial</option><option>Paid</option></select>
         <button type="submit">Generate Invoice</button>
       </form>
@@ -586,13 +559,13 @@ class App {
   addInvoiceLine() {
     const tbody = document.querySelector('#invLines tbody');
     const row = document.createElement('tr');
-    row.innerHTML = `<tr><select class="invService" style="margin:0;">${this.store.services.map(s=>`<option>${s}</option>`).join('')}</select></td><td><input type="number" class="invAmount" oninput="window.app.calcInvoiceTotal()" min="0" placeholder="0"></td><td><button type="button" class="danger sm" onclick="this.closest('tr').remove();window.app.calcInvoiceTotal()">✕</button></tr>`;
+    row.innerHTML = `<tr><select class="invService" style="margin:0;">${this.store.services.map(s=>`<option>${s}</option>`).join('')}</select></td><td><input type="number" class="invAmount" oninput="window.app.calcInvoiceTotal()" min="0" placeholder="0"></td><td><button type="button" class="danger sm" onclick="this.closest('tr').remove();window.app.calcInvoiceTotal()">✕</button></td>`;
     tbody.appendChild(row);
   }
   calcInvoiceTotal() {
     const amounts = Array.from(document.querySelectorAll('.invAmount')).map(inp => Number(inp.value) || 0);
     const sub = amounts.reduce((a,b)=>a+b,0);
-    const gst = sub * 0.0;
+    const gst = sub * 0.18;
     const tot = sub + gst;
     if(document.getElementById('invSub')) document.getElementById('invSub').value = sub.toFixed(2);
     if(document.getElementById('invGst')) document.getElementById('invGst').value = gst.toFixed(2);
@@ -624,8 +597,73 @@ class App {
     const s = this.store.db.settings;
     const lines = inv.lines || [];
     const totalNum = parseFloat(inv.total) || 0;
+    const words = Utils.numberToWords(Math.round(totalNum));
     const win = window.open('', '_blank');
-    win.document.write(`<html><head><title>Invoice ${inv.invNum}</title><style>body{font-family:sans-serif;padding:2rem;}</style></head><body><h1>${s.companyName}</h1><p>Invoice: ${inv.invNum}<br>Date: ${inv.date}<br>Customer: ${cust?.name}<br>${cust?.address}</p><table border="1"><tr><th>Service</th><th>Amount</th></tr>${lines.map(l=>`<tr><td>${l.service}</td><td>₹${l.amount}</td></tr>`).join('')}</td><td colspan="2"><strong>Total: ₹${totalNum}</strong></td></tr></table><p>Amount in words: ${Utils.numberToWords(Math.round(totalNum))}</p><div>Prepared by<br>_____________</div><div>Manager<br>_____________</div></body></html>`);
+    win.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head><title>Invoice ${inv.invNum}</title>
+      <style>
+        body { font-family: 'Inter', Arial, sans-serif; margin: 0; padding: 12mm; background: white; color: black; }
+        .invoice-container { max-width: 800px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+        .logo-area { display: flex; gap: 15px; align-items: center; }
+        .logo-area img { max-height: 70px; max-width: 150px; object-fit: contain; }
+        .company-details { text-align: right; }
+        .company-name { font-size: 22px; font-weight: 700; color: #0b6b3a; margin: 0; }
+        .tagline { font-size: 12px; color: #555; }
+        .address { font-size: 11px; margin: 4px 0; }
+        .invoice-title { text-align: center; font-size: 18px; font-weight: bold; margin: 15px 0; text-decoration: underline; }
+        .info-row { display: flex; justify-content: space-between; margin: 8px 0; font-size: 13px; }
+        .info-row strong { width: 120px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 12px; }
+        th { background: #f5f5f5; }
+        .total-row { font-weight: bold; background: #f9f9f9; }
+        .words { margin: 15px 0; font-size: 12px; }
+        .signatures { display: flex; justify-content: space-between; margin-top: 40px; font-size: 11px; }
+        hr { margin: 10px 0; }
+        @media print { body { margin: 0; padding: 0; } }
+      </style>
+      </head>
+      <body>
+      <div class="invoice-container">
+        <div class="header">
+          <div class="logo-area">
+            ${s.companyLogo ? `<img src="${s.companyLogo}" alt="Company Logo">` : '<h2 style="color:#0b6b3a;">PEST CONTROL TECHNICS</h2>'}
+            ${s.memberLogo ? `<img src="${s.memberLogo}" alt="Member Logo">` : ''}
+          </div>
+          <div class="company-details">
+            <div class="company-name">${s.companyName || 'PEST CONTROL TECHNICS'}</div>
+            <div class="tagline">${s.companyTagline || 'Creating a Pest free environment since 1989'}</div>
+            <div class="address">${s.companyAddress || '3-4-607, 1st Floor, NARAYANGUDA, Hyderabad-29'}</div>
+            <div class="address">Email: ${s.companyEmail || 'info@pesttech.in'}</div>
+          </div>
+        </div>
+        <div class="invoice-title">TAX INVOICE</div>
+        <div class="info-row"><strong>To M/s:</strong> ${cust?.name || ''}</div>
+        <div class="info-row"><strong>Invoice No:</strong> ${inv.invNum}</div>
+        <div class="info-row"><strong>Date:</strong> ${inv.date}</div>
+        <div class="info-row"><strong>Work Order No:</strong> ${inv.workOrderNo || '—'}</div>
+        <div class="info-row"><strong>Description:</strong> ${inv.serviceDescription || 'General pest control & rodent control treatment'}</div>
+        <table>
+          <thead><tr><th>Description of Service</th><th style="text-align:right">Amount (₹)</th></tr></thead>
+          <tbody>${lines.map(l => `<tr><td>${l.service}</td><td style="text-align:right">${Number(l.amount).toFixed(2)}</td></tr>`).join('')}
+          <tr class="total-row"><td style="text-align:right"><strong>Total</strong></td><td style="text-align:right"><strong>₹${totalNum.toFixed(2)}</strong></td></tr>
+          </tbody>
+        </table>
+        <div class="words"><strong>Rupees:</strong> ${words}</div>
+        <div class="signatures">
+          <div>Prepared by<br><br><br>_________________</div>
+          <div>Checked by<br><br><br>_________________</div>
+          <div>Manager<br><br><br>_________________</div>
+        </div>
+        <hr><p style="font-size:10px; text-align:center;">Thank you for your business</p>
+      </div>
+      <script>window.onload = function() { window.print(); window.close(); }<\/script>
+      </body>
+      </html>
+    `);
     win.document.close();
   }
   // ----- AMC -----
@@ -683,7 +721,7 @@ class App {
     data.forEach(row => { csv += keys.map(k => `"${(row[k]||'').toString().replace(/"/g,'""')}"`).join(',') + '\n'; });
     const blob = new Blob([csv], {type:'text/csv'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `pct_${table}_${new Date().toISOString().slice(0,10)}.csv`; a.click(); URL.revokeObjectURL(a.href); Utils.toast('Exported');
   }
-  // ----- SETTINGS -----
+  // ----- SETTINGS (with fixed logo uploads) -----
   renderSettings() {
     const s = this.store.db.settings;
     const users = this.store.get('users');
@@ -691,13 +729,69 @@ class App {
     document.getElementById('ca').innerHTML = `
       <div class="g g2 mb4">
         <div class="card"><h4>Company Details</h4><form onsubmit="window.app.saveCompanySettings(event)"><input name="companyName" value="${s.companyName||''}"><input name="companyTagline" value="${s.companyTagline||''}"><textarea name="companyAddress">${s.companyAddress||''}</textarea><div class="fr"><input name="companyPhone" value="${s.companyPhone||''}"><input name="companyGST" value="${s.companyGST||''}"></div><button type="submit">Save</button></form></div>
-        <div class="card"><h4>Logos & Backup</h4><label>Company Logo</label><input type="file" accept="image/*" onchange="window.app.uploadLogo(event, 'companyLogo')">${s.companyLogo ? `<img src="${s.companyLogo}" style="max-height:50px;">` : ''}<label>Member Logo</label><input type="file" accept="image/*" onchange="window.app.uploadLogo(event, 'memberLogo')">${s.memberLogo ? `<img src="${s.memberLogo}" style="max-height:50px;">` : ''}<button class="sec" onclick="window.app.backupData()">Download Backup</button><button class="sec" onclick="document.getElementById('restoreFile').click()">Restore Backup</button><input type="file" id="restoreFile" style="display:none" accept=".json" onchange="window.app.restoreData(event)"></div>
+        <div class="card"><h4>Logos & Backup</h4>
+          <label>Company Logo</label><input type="file" accept="image/*" onchange="window.app.uploadLogo(event, 'companyLogo')">
+          ${s.companyLogo ? `<img src="${s.companyLogo}" style="max-height:60px; margin-top:5px; border:1px solid var(--border); border-radius:4px;">` : '<p class="muted" style="font-size:0.75rem;">No logo uploaded</p>'}
+          <label style="margin-top:12px;">Member Logo (IPCA / Association)</label><input type="file" accept="image/*" onchange="window.app.uploadLogo(event, 'memberLogo')">
+          ${s.memberLogo ? `<img src="${s.memberLogo}" style="max-height:60px; margin-top:5px; border:1px solid var(--border); border-radius:4px;">` : '<p class="muted" style="font-size:0.75rem;">No logo uploaded</p>'}
+          <div style="margin-top:15px;"><button class="sec" onclick="window.app.backupData()">📥 Download Backup</button><button class="sec" style="margin-left:8px;" onclick="document.getElementById('restoreFile').click()">📤 Restore Backup</button><input type="file" id="restoreFile" style="display:none" accept=".json" onchange="window.app.restoreData(event)"></div>
+        </div>
       </div>
       <div class="card mb4"><h4>Users</h4>${Utils.table(users, [{key:'username',label:'Username'},{key:'role',label:'Role'}], row => this.me.id !== row.id ? `<button class="danger sm" onclick="window.app.deleteUser('${row.id}')">Delete</button>` : '<span>You</span>')}<button class="sec" onclick="window.app.showAddUserForm()">+ Add User</button></div>
       <div class="card"><h4>Audit Log</h4><div style="max-height:300px;overflow-y:auto;">${Utils.table(logs.slice(0,100), [{key:'time',label:'Time'},{key:'user',label:'User'},{key:'action',label:'Action'}], null)}</div></div>
     `;
   }
-  uploadLogo(e, key) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = async ev => { this.store.db.settings[key] = ev.target.result; await this.store.save(); this.renderSettings(); Utils.toast('Logo saved'); }; reader.readAsDataURL(file); }
+
+  async uploadLogo(e, key) {
+    const file = e.target.files[0];
+    if (!file) return;
+    Utils.toast(`Compressing ${key === 'companyLogo' ? 'company' : 'member'} logo...`, "info");
+    try {
+      const compressedBase64 = await this.compressImage(file, 0.7, 800);
+      if (!compressedBase64) throw new Error("Compression failed");
+      this.store.db.settings[key] = compressedBase64;
+      await this.store.save();
+      this.renderSettings();
+      Utils.toast(`${key === 'companyLogo' ? 'Company' : 'Member'} logo saved permanently!`);
+      console.log(`${key} saved, length: ${compressedBase64.length}`);
+    } catch (err) {
+      console.error("Logo upload error:", err);
+      Utils.toast(`Failed to save ${key}. Error: ${err.message}`, "danger");
+    }
+  }
+
+  compressImage(file, quality = 0.7, maxWidth = 800) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          let outputType = file.type;
+          if (outputType !== 'image/jpeg' && outputType !== 'image/png' && outputType !== 'image/webp') {
+            outputType = 'image/jpeg';
+          }
+          const base64 = canvas.toDataURL(outputType, quality);
+          resolve(base64);
+        };
+        img.onerror = (err) => reject(new Error("Image load failed"));
+        img.src = ev.target.result;
+      };
+      reader.onerror = (err) => reject(new Error("File read failed"));
+      reader.readAsDataURL(file);
+    });
+  }
+
   async saveCompanySettings(e) { e.preventDefault(); const data = Object.fromEntries(new FormData(e.target)); Object.assign(this.store.db.settings, data); await this.store.save(); this.renderSettings(); Utils.toast('Settings saved'); }
   backupData() { const data = JSON.stringify(this.store.db); const blob = new Blob([data], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `pct_backup_${new Date().toISOString().slice(0,10)}.json`; a.click(); }
   restoreData(e) { const file = e.target.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = async ev => { try { const imported = JSON.parse(ev.target.result); if(imported.users && imported.customers) { this.store.db = imported; await this.store.save(); Utils.toast('Restored, reloading...'); setTimeout(()=>location.reload(), 1500); } else throw new Error(); } catch(err) { Utils.toast('Invalid backup','danger'); } }; reader.readAsText(file); }
@@ -706,7 +800,6 @@ class App {
   async deleteUser(id) { if(confirm('Delete user?')) { await this.store.delete('users', id); this.renderSettings(); } }
 }
 
-// start app when DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   window.app = new App();
 });
