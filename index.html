@@ -209,7 +209,28 @@ async function loadFromCloud() {
 class Store {
   constructor() {
     this.services = ['Cockroach Treatment','Termite Treatment','Rodent Control','Mosquito Fogging','Bed Bug Treatment','Sanitization','General Pest Control','Wood Borer Treatment'];
-    this.areas = ['Secunderabad','Banjara Hills','Jubilee Hills','Hi-Tech City','Kukatpally','Ameerpet','Begumpet','Madhapur','Gachibowli'];
+    this.areas = [
+  // Central & Old City
+  "Abids", "Afzal Gunj", "Begum Bazaar", "Charminar", "Dar-ul-Shifa", "Goshamahal", "Hyderabad Main (GPO)", "Koti", "Malakpet", "Moghalpura", "Mozamjahi Market", "Nampally", "Old City (Chudi Bazaar)", "Osmania University", "Purani Haveli", "Raj Bhavan Road", "Sultan Bazar", "Tilak Road", "Yakutpura",
+  
+  // South & South‑West
+  "Aramghar", "Attapur", "Bahadurpura", "Barkas", "Chandrayangutta", "Dabeerpura", "Falaknuma", "Himayatnagar", "Jahanuma", "Kanchanbagh", "Lal Darwaza", "Moinabad", "Narsingi", "Rajendranagar", "Santosh Nagar", "Shamshabad", "Suncity", "Tolichowki", "Uppuguda",
+  
+  // West & North‑West (IT Corridor)
+  "Banjara Hills (All Roads)", "Banjara Hills Road No.1 to 12", "Film Nagar", "Jubilee Hills (All Roads)", "Jubilee Hills Checkpost", "Khajaguda", "Kondapur", "Madhapur", "Gachibowli", "Kavuri Hills", "Financial District", "Nanakramguda", "HITEC City", "Manikonda", "Puppalguda", "Tellapur", "Nallagandla", "Serilingampally", "Miyapur", "Bachupally", "Kukatpally", "KPHB Colony", "Kukatpally Housing Board", "Moosapet", "BHEL", "Chanda Nagar", "Lingampally", "Chandanagar", "Hafeezpet", "Vivekananda Nagar", "Rudraram",
+  
+  // North & North‑East
+  "Alwal", "Bowenpally", "Balanagar", "Bolarum", "Chilkalguda", "Domalguda", "Gandhinagar", "Jeedimetla", "Karkhana", "Lalaguda", "Malkajgiri", "Mettuguda", "Nacharam", "Neredmet", "R.K. Puram", "Safilguda", "Santhi Nagar", "Sikanderabad", "Tarnaka", "Trimulgherry", "Uppal", "ECIL X Roads", "Habsiguda", "AS Rao Nagar", "Cherlapalli", "Kushaiguda", "Nagole",
+  
+  // East & South‑East
+  "Amberpet", "Dilsukhnagar", "Gaddiannaram", "Chaitanyapuri", "Kothapet", "L.B. Nagar", "Mansoorabad", "Nagarjuna Sagar Road", "Ramanthapur", "Saroornagar", "Sagar Ring Road", "Hayathnagar", "Vanastalipuram", "Pocharam", "Boduppal", "Medipally", "Ghatkesar",
+  
+  // New & Developing Areas
+  "Bandlaguda Jagir", "Kismatpur", "Peerancheru", "Shadnagar", "Moula Ali", "Kapra", "ECIL", "Hyder Nagar", "Yapral", "Sainikpuri", "A.S. Rao Nagar", "Sri Nagar Colony", "Ameerpet", "S.R. Nagar", "Erragadda", "Sanjeeva Reddy Nagar", "Yellareddyguda", "Srinagar Colony", "Punjagutta", "Somajiguda", "Khairatabad", "Masab Tank", "Lakdi-ka-pul", "Saifabad", "Secretariat",
+  
+  // Additional Important Localities
+  "Shalibanda", "Moghalpura", "Kachiguda", "Narayanguda", "Domalguda", "Himayathnagar", "Basheerbagh", "Lakdikapul", "Khairtabad", "Irrum Manzil", "Begumpet", "Shamirpet", "Kompally", "Suchitra", "Jeedimetla", "Quthbullapur", "Patancheru", "Sangareddy", "Medchal", "Gundlapochampally", "Bowrampet"
+];
     this.contractTypes = ['General Pest','Termite','Rodent','Mosquito Fogging','Bed Bug','Pre-Construction Termite','Post-Construction Termite'];
     this.defaultData = {
       users: [
