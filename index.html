@@ -590,7 +590,7 @@ class App {
   calcInvoiceTotal() {
     const amounts = Array.from(document.querySelectorAll('.invAmount')).map(inp => Number(inp.value) || 0);
     const sub = amounts.reduce((a,b)=>a+b,0);
-    const gst = sub * 0.18;
+    const gst = sub * 0.0;
     const tot = sub + gst;
     if(document.getElementById('invSub')) document.getElementById('invSub').value = sub.toFixed(2);
     if(document.getElementById('invGst')) document.getElementById('invGst').value = gst.toFixed(2);
