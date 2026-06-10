@@ -574,7 +574,7 @@ class App {
         <h4>Line Items</h4>
         <table id="invLines" style="width:100%;margin-bottom:0.5rem;"><thead><tr><th>Service</th><th>Amount (₹)</th><th></th></tr></thead><tbody><tr><td><select class="invService" style="margin:0;">${this.store.services.map(s=>`<option>${s}</option>`).join('')}</select><tr><td><input type="number" class="invAmount" oninput="window.app.calcInvoiceTotal()" min="0" step="1" placeholder="0"></td><td><button type="button" class="danger sm" onclick="this.closest('tr').remove();window.app.calcInvoiceTotal()">✕</button></td></tr></tbody></table>
         <button type="button" class="sec sm" onclick="window.app.addInvoiceLine()">+ Add Line</button>
-        <div class="g g3" style="margin-top:0.8rem;"><div><label>Subtotal</label><input id="invSub" readonly></div><div><label>GST 18%</label><input id="invGst" readonly></div><div><label>Total</label><input name="total" id="invTotal" readonly></div></div>
+        <div class="g g3" style="margin-top:0.8rem;"><div><label>Subtotal</label><input id="invSub" readonly></div><div><label>GST 0%</label><input id="invGst" readonly></div><div><label>Total</label><input name="total" id="invTotal" readonly></div></div>
         <label>Payment Status</label><select name="paymentStatus"><option>Unpaid</option><option>Partial</option><option>Paid</option></select>
         <button type="submit">Generate Invoice</button>
       </form>
@@ -590,7 +590,7 @@ class App {
   calcInvoiceTotal() {
     const amounts = Array.from(document.querySelectorAll('.invAmount')).map(inp => Number(inp.value) || 0);
     const sub = amounts.reduce((a,b)=>a+b,0);
-    const gst = sub * 0.0;
+    const gst = sub * 0;
     const tot = sub + gst;
     if(document.getElementById('invSub')) document.getElementById('invSub').value = sub.toFixed(2);
     if(document.getElementById('invGst')) document.getElementById('invGst').value = gst.toFixed(2);
